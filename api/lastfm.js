@@ -1,7 +1,8 @@
 export default async function handler(req, res) {
     const { method, artist, track, query } = req.query;
   
-    const apiKey = process.env.LASTFM_API_KEY; 
+    // eslint-disable-next-line no-undef
+    const apiKey = process.env.LASTFM_API_KEY;
   
     if (!method) {
       return res.status(400).json({ error: "Missing 'method' parameter" });
