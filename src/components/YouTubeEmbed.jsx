@@ -9,7 +9,7 @@ function YouTubeEmbed({ songTitle }) {
   
     const fetchVideo = async () => {
       try {
-        const res = await fetch(`/api/youtube-search?q=${encodeURIComponent(songTitle)}`);
+        const res = await fetch(`/api/youtube?q=${encodeURIComponent(songTitle)}`);
         const data = await res.json();
   
         if (data.videoId) {

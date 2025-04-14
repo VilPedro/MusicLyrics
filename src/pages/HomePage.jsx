@@ -14,7 +14,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (searchQuery.length > 0) {
-      fetch(`/api/lastfmSearch?search=${encodeURIComponent(searchQuery)}`)
+      fetch(`/api/lastfm?search=${encodeURIComponent(searchQuery)}`)
         .then(response => response.json())
         .then(data => setSuggestions(data.results.trackmatches.track.slice(0, 7)))
         .catch(error => console.error('Error al obtener sugerencias:', error));
