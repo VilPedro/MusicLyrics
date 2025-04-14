@@ -5,7 +5,7 @@ import translate from "translate";
 import Tabs from '../components/Tabs';
 import {  isFavorite, toggleFavorite } from '../utils/favorites';
 
-const LastFM_API = import.meta.env.VITE_LASTFM_API;
+
 
 const SearchPage = () => {
   const [activeTab, setActiveTab] = useState("lyrics");
@@ -20,48 +20,47 @@ const SearchPage = () => {
      setFavoritesChanged(!favoritesChanged);
    };
 
-  useEffect(() => {
+   useEffect(() => {
     const fetchSongDetails = async () => {
       if (!selectedTrack?.artist || !selectedTrack?.name) return;
-
+  
       try {
-        const lastfmRes = await fetch(
-          `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LastFM_API}&artist=${encodeURIComponent(selectedTrack.artist)}&track=${encodeURIComponent(selectedTrack.name)}&format=json`
-        );
-        const lastfmData = await lastfmRes.json();
-
-        if (lastfmData?.track) {
-          const rawWiki = lastfmData.track.wiki?.content || "No hay información disponible.";
+        const res = await fetch(`/api/lastfm-info?artist=${encodeURIComponent(selectedTrack.artist)}&track=${encodeURIComponent(selectedTrack.name)}`);
+        const data = await res.json();
+  
+        if (data?.track) {
+          const rawWiki = data.track.wiki?.content || "No hay información disponible.";
           const cleanWiki = rawWiki.replace(/<a href=.*last\.fm.*<\/a>/, "").trim();
           const wikiContent = await translate(cleanWiki, { to: "es" });
-
+  
           setSongDetails({
             title: selectedTrack.name,
             artist: selectedTrack.artist,
-            image: lastfmData.track?.album?.image?.[3]?.["#text"]?.trim() || "/default.png",
+            image: data.track?.album?.image?.[3]?.["#text"]?.trim() || "/default.png",
             wiki: wikiContent,
-            tags: lastfmData.track.toptags?.tag?.map(tag => tag.name).join(", ") || "No tags disponibles",
-            url: lastfmData.track.url || "#",
+            tags: data.track.toptags?.tag?.map(tag => tag.name).join(", ") || "No tags disponibles",
+            url: data.track.url || "#",
           });
         }
       } catch (error) {
         console.error("Error al obtener detalles de la canción:", error);
       }
     };
-
+  
     fetchSongDetails();
   }, [selectedTrack]);
-
+  
   useEffect(() => {
     if (searchQuery.length > 0) {
-      fetch(`https://ws.audioscrobbler.com/2.0/?method=track.search&api_key=${LastFM_API}&track=${searchQuery}&format=json`)
-        .then(response => response.json())
-        .then(data => setSuggestions(data.results.trackmatches.track.slice(0, 7)))
+      fetch(`/api/lastfm-search?query=${encodeURIComponent(searchQuery)}`)
+        .then(res => res.json())
+        .then(data => setSuggestions(data.tracks.slice(0, 7)))
         .catch(error => console.error('Error al obtener sugerencias:', error));
     } else {
       setSuggestions([]);
     }
   }, [searchQuery]);
+  
 
   const TabContent = {
     lyrics: (

@@ -1,32 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Play } from 'lucide-react';
-const YT_API_KEY = import.meta.env.VITE_YT_API;
 
 function YouTubeEmbed({ songTitle }) {
   const [videoId, setVideoId] = useState(null);
 
   useEffect(() => {
     if (!songTitle) return;
+  
     const fetchVideo = async () => {
       try {
-        const response = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(songTitle)}&type=video&key=${YT_API_KEY}`
-        );
-        const data = await response.json();
-        if (!data.items || data.items.length === 0) {
-          console.error("No se encontraron videos para esta búsqueda");
-          return;
-        }
-        if (data.items.length > 0) {
-          const firstVideoId = data.items[0].id.videoId;
-          setVideoId(firstVideoId);
+        const res = await fetch(`/api/youtube-search?q=${encodeURIComponent(songTitle)}`);
+        const data = await res.json();
+  
+        if (data.videoId) {
+          setVideoId(data.videoId);
+        } else {
+          console.error("No se encontró video:", data.error);
         }
       } catch (error) {
         console.error("Error al obtener el video de YouTube:", error);
       }
     };
+  
     fetchVideo();
   }, [songTitle]);
+  
 
   return (
     <div className="aspect-video w-full bg-zinc-800">

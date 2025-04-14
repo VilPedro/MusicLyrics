@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import LyricsDisplay from '../components/LyricsDisplay'; 
 import YouTubeEmbed from '../components/YouTubeEmbed';
 import { Music, Heart } from 'lucide-react';
-isFavorite
 import { isFavorite, toggleFavorite } from '../utils/favorites';
 
 
-const LastFM_API = import.meta.env.VITE_LASTFM_API;
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,7 +14,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (searchQuery.length > 0) {
-      fetch(`http://ws.audioscrobbler.com/2.0/?method=track.search&api_key=${LastFM_API}&track=${encodeURIComponent(searchQuery)}&format=json`)
+      fetch(`/api/lastfmSearch?search=${encodeURIComponent(searchQuery)}`)
         .then(response => response.json())
         .then(data => setSuggestions(data.results.trackmatches.track.slice(0, 7)))
         .catch(error => console.error('Error al obtener sugerencias:', error));
