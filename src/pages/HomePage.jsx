@@ -5,7 +5,6 @@ import { Music, Heart } from 'lucide-react';
 import { isFavorite, toggleFavorite } from '../utils/favorites';
 
 
-
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -14,9 +13,12 @@ const HomePage = () => {
 
   useEffect(() => {
     if (searchQuery.length > 0) {
-      fetch(`/api/lastfm?search=${encodeURIComponent(searchQuery)}`)
+      fetch(`/api/lastfm?method=track.search&query=${encodeURIComponent(searchQuery)}`)
         .then(response => response.json())
-        .then(data => setSuggestions(data.results.trackmatches.track.slice(0, 7)))
+        .then(data => {
+          const tracks = data.results?.trackmatches?.track || [];
+          setSuggestions(tracks.slice(0, 7));
+        })
         .catch(error => console.error('Error al obtener sugerencias:', error));
     } else {
       setSuggestions([]);
