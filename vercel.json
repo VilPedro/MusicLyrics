@@ -1,15 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/lastfm.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/youtubeSearch.js",
-      "use": "@vercel/node"
-    }
-  ],
   "routes": [
     {
       "src": "/api/lastfm",
